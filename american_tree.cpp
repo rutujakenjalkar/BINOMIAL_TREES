@@ -21,11 +21,12 @@ class node
     double value_of_stock;
     double probability_up_prev;
     double probability_down_prev;
+    double final_payoff_of_node=0.0;
 
-    node(double payoff,double value_of_stock,double pi_u,double pi_d)
+    node(double payoff,double value,double pi_u,double pi_d)
     {
         payoff=payoff;
-        value_of_stock=value_of_stock;
+        value_of_stock=value;
         probability_up_prev=pi_u;
         probability_down_prev=pi_d;
 
@@ -234,6 +235,38 @@ int main()
             }
         }
     }
+    }
+
+
+
+    //for DOING THE ACTUAL MATH CAULTION
+    for(int i = 0;i<=level-1;i++)
+    {
+        for (int x =0;x<=level-1;x++)
+        {
+            for (int y =0 ;y<=level-1;y++)
+            {
+                if (x+y == i)
+                {
+                    //getting the upper node from the current node
+                    double weighted_up_value= tree[x+1][y].probability_up_prev*tree[x+1][y].payoff;
+                    //getting the lower node from the current node 
+                    double weighted_down_value = tree[x][y+1].probability_down_prev*tree[x][y+1].payoff;
+                    discount_fact=1/exp(risk_free_rate*0.01*T);
+                    temp=(weighted_up_value+weighted_down_value)/discount_fact;
+
+                    if (temp>tree[x][y].payoff)
+                    {
+                        tree[x][y].final_payoff_of_node=temp;
+                    }
+                    else
+                    {
+                        tree[x][y].final_payoff_of_node=tree[x][y].payoff;
+                    }
+
+                }
+            }
+        }
     }
 
 
