@@ -3,6 +3,13 @@
 using namespace std;
 #include <cmath>
 #include <vector>
+#include <cstdio>
+
+class node;
+
+void print_horizontal_tree(double current_price, double up_move, double down_move, double option_value, const std::vector<std::vector<node>>& tree, int total_level);
+
+
 
 class node
 {
@@ -240,6 +247,9 @@ int main()
 //    cout<<"weighted_sum"<<weighted_sum<<endl;
 
     double option_value=weighted_sum*discount_factor;
+
+    print_horizontal_tree(current_price, up_move, down_move, option_value, tree, level);
+
     cout<<"the value of the option is "<<option_value;
 
 
@@ -248,4 +258,55 @@ int main()
 
 
 
+}
+
+
+
+
+void print_horizontal_tree(double current_price, double up_move, double down_move, 
+                            double option_value, const std::vector<std::vector<node>>& tree, int total_level) 
+{
+    // Fix: Compute the steps dynamically to display real numbers instantly
+    double s0_val = current_price;
+    double u1_val = current_price * up_move;
+    double d1_val = current_price * down_move;
+
+    double u2_val = current_price * up_move * up_move;
+    double m2_val = current_price * up_move * down_move;
+    double d2_val = current_price * down_move * down_move;
+
+    std::cout << "\n=================================================================================\n";
+    std::cout << "                      HORIZONTAL BINOMIAL LATTICE VIEW (t0 -> t2)                \n";
+    std::cout << "=================================================================================\n\n";
+
+    printf("                                                            +--------------+\n");
+    printf("                                                            |  2 Up, 0 Dn  |\n");
+    printf("                                                            | Stock: %-5.2f |\n", u2_val);
+    printf("                                                            +--------------+\n");
+    printf("                                                           /\n");
+    printf("                                   +--------------+       /\n");
+    printf("                                   |  1 Up, 0 Dn  |------┘\n");
+    printf("                                   | Stock: %-5.2f |\n", u1_val);
+    printf("                                   +--------------+       \\\n");
+    printf("                                  /                        \\\n");
+    printf("                                 /                          \\\n");
+    printf("+--------------+                /                            +--------------+\n");
+    printf("|  Root (S0)   |---------------┘                             |  1 Up, 1 Dn  |\n");
+    printf("| Stock: %-5.2f |\n", s0_val);
+    printf("| Option:%-5.2f |---------------┐                             | Stock: %-5.2f |\n", option_value, m2_val);
+    printf("+--------------+                \\                            +--------------+\n");
+    printf("                                 \\                          /\n");
+    printf("                                  \\                        /\n");
+    printf("                                   +--------------+       /\n");
+    printf("                                   |  0 Up, 1 Dn  |------┘\n");
+    printf("                                   | Stock: %-5.2f |\n", d1_val);
+    printf("                                   +--------------+       \\\n");
+    printf("                                                           \\\n");
+    printf("                                                            +--------------+\n");
+    printf("                                                            |  0 Up, 2 Dn  |\n");
+    printf("                                                            | Stock: %-5.2f |\n", d2_val);
+    printf("                                                            +--------------+\n\n");
+
+    printf("... [Lattice tree continues processing dynamically down to level %d] ...\n", total_level);
+    std::cout << "=================================================================================\n\n";
 }

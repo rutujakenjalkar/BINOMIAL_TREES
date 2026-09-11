@@ -8,11 +8,6 @@ using namespace std;
 
 
 
-
-
-
-
-
 //NODE CLASS
 class node
 {
@@ -21,11 +16,11 @@ class node
     double value_of_stock;
     double probability_up_prev;
     double probability_down_prev;
-    double final_payoff_of_node=0.0;
 
-    node(double payoff,double value,double pi_u,double pi_d)
+
+    node(double p,double value,double pi_u,double pi_d)
     {
-        payoff=payoff;
+        payoff=p;
         value_of_stock=value;
         probability_up_prev=pi_u;
         probability_down_prev=pi_d;
@@ -67,17 +62,6 @@ double get_pay_off(char type, double strike_price, double value)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 int main()
 {
     cout<<"WELCOME TO THE BINOMIAL TREE CALCUTION FOR EUROPIAN OPTION"<<endl;
@@ -86,7 +70,6 @@ int main()
 
     double current_price,strike_price;
     double volatility,maturity;
-    double frequency;
     double risk_free_rate;
     int level;
     char type;
@@ -104,8 +87,6 @@ int main()
     std::cout<<"Enter the maturity of the stock :";
     std::cin>>maturity;
 
-    std::cout<<"Enter the frequency of the compounding:";
-    std::cin>>frequency;
 
     std::cout<<"Enter the risk free rate of the stock :";
     std::cin>>risk_free_rate;
@@ -120,7 +101,7 @@ int main()
     //CALCULATING THE FACTORS 
 
 
-    double T= maturity/frequency;
+    double T= maturity/level;
     double factor_1=volatility*sqrt(T)*0.01;
 
     double up_move=exp(factor_1);
@@ -158,11 +139,11 @@ int main()
                 tree[i][j].probability_down_prev=1;
                 tree[i][j].value_of_stock=current_price;
                 tree[i][j].payoff=0;
-                cout<<"i: "<<i<<"j: "<<j<<endl;
-                cout<<"prob up:"<<tree[i][j].probability_up_prev<<endl;
-                cout<<"prob down:"<<tree[i][j].probability_down_prev<<endl;
-                cout<<"value of option:"<<tree[i][j].value_of_stock<<endl;
-                cout<<"payoff: "<<tree[i][j].payoff<<endl;
+                //cout<<"i: "<<i<<"j: "<<j<<endl;
+                // cout<<"prob up:"<<tree[i][j].probability_up_prev<<endl;
+                // cout<<"prob down:"<<tree[i][j].probability_down_prev<<endl;
+                // cout<<"value of option:"<<tree[i][j].value_of_stock<<endl;
+                // cout<<"payoff: "<<tree[i][j].payoff<<endl;
                 
             }
             else if (i==0)
@@ -170,11 +151,11 @@ int main()
 
 
                 //setting the probability
-                cout<<"i: "<<i<<"j: "<<j<<endl;
+                //cout<<"i: "<<i<<"j: "<<j<<endl;
                 tree[i][j].probability_up_prev=0.0;
-                cout<<"prob _up "      <<tree[i][j].probability_up_prev<<endl;
+                // cout<<"prob _up "      <<tree[i][j].probability_up_prev<<endl;
                 tree[i][j].probability_down_prev=down_probability;
-                cout<<"prob _down "      <<tree[i][j].probability_down_prev<<endl;
+                // cout<<"prob _down "      <<tree[i][j].probability_down_prev<<endl;
 
                 //geting the pay off and the stock price 
                 double power_value=pow(down_move,j);
@@ -182,21 +163,21 @@ int main()
                 
                 //setting the pay off and the current strike price 
                 tree[i][j].value_of_stock=value_after_down;
-                cout<<"value of option"<<tree[i][j].value_of_stock;
+                // cout<<"value of option"<<tree[i][j].value_of_stock;
                 tree[i][j].payoff=get_pay_off(type,strike_price,value_after_down);
-                cout<<"pay off:"<<tree[i][j].payoff<<endl;
+                // cout<<"pay off:"<<tree[i][j].payoff<<endl;
 
             }
             else if (j==0)
             {
 
 
-                cout<<"i: "<<i<<"j: "<<j<<endl;
+                //cout<<"i: "<<i<<"j: "<<j<<endl;
                  //setting the probability
                 tree[i][j].probability_down_prev=0.0;
-                cout<<"prob _down "      <<tree[i][j].probability_down_prev<<endl;
+                // cout<<"prob _down "      <<tree[i][j].probability_down_prev<<endl;
                 tree[i][j].probability_up_prev=up_probability;
-                cout<<"prob _up "      <<tree[i][j].probability_up_prev<<endl;
+                // cout<<"prob _up "      <<tree[i][j].probability_up_prev<<endl;
 
                 //geting the pay off and the stock price 
                 double power_value=pow(up_move,i);
@@ -204,9 +185,9 @@ int main()
                 
                 //setting the pay off and the current strike price 
                 tree[i][j].value_of_stock=value_after_up;
-                cout<<"value of option"<<tree[i][j].value_of_stock;
+                // cout<<"value of option"<<tree[i][j].value_of_stock;
                 tree[i][j].payoff=get_pay_off(type,strike_price,value_after_up);
-                cout<<"pay off:"<<tree[i][j].payoff<<endl;
+                // cout<<"pay off:"<<tree[i][j].payoff<<endl;
 
 
 
@@ -214,22 +195,22 @@ int main()
             else
             {   
 
-                 cout<<"i:"<<i<<"j:"<<j<<endl;
+                 //cout<<"i:"<<i<<"j:"<<j<<endl;
                  // logic for the mixed nodes
                  tree[i][j].probability_up_prev=up_probability;
-                 cout<<"up probability: "<<tree[i][j].probability_up_prev<<endl;
+                //  cout<<"up probability: "<<tree[i][j].probability_up_prev<<endl;
                  tree[i][j].probability_down_prev=down_probability;
-                  cout<<"down probability: "<<tree[i][j].probability_down_prev<<endl;
+                //   cout<<"down probability: "<<tree[i][j].probability_down_prev<<endl;
 
                  
                   double power_value_up= pow(up_move,i);
                   double power_value_down= pow(down_move,j);
                   double value_of_stock=current_price*power_value_up*power_value_down;
                   tree[i][j].value_of_stock=value_of_stock;
-                  cout<<"current value of the stock: "<<tree[i][j].value_of_stock<<endl;
+                //   cout<<"current value of the stock: "<<tree[i][j].value_of_stock<<endl;
                   double pay_off= get_pay_off(type,strike_price,value_of_stock);
                   tree[i][j].payoff=pay_off;
-                  cout<<"the value of payoff :"<<tree[i][j].payoff<<endl;
+                //   cout<<"the value of payoff :"<<tree[i][j].payoff<<endl;
 
 
             }
@@ -240,7 +221,7 @@ int main()
 
 
     //for DOING THE ACTUAL MATH CAULTION
-    for(int i = 0;i<=level-1;i++)
+    for(int i = level-1;i>=0;i--)
     {
         for (int x =0;x<=level-1;x++)
         {
@@ -252,16 +233,12 @@ int main()
                     double weighted_up_value= tree[x+1][y].probability_up_prev*tree[x+1][y].payoff;
                     //getting the lower node from the current node 
                     double weighted_down_value = tree[x][y+1].probability_down_prev*tree[x][y+1].payoff;
-                    discount_fact=1/exp(risk_free_rate*0.01*T);
-                    temp=(weighted_up_value+weighted_down_value)/discount_fact;
+                   double discount_fact = 1.0 / exp(risk_free_rate * 0.01 * T);
+                    double temp = (weighted_up_value + weighted_down_value) * discount_fact; // Multiply to discount back
 
                     if (temp>tree[x][y].payoff)
                     {
-                        tree[x][y].final_payoff_of_node=temp;
-                    }
-                    else
-                    {
-                        tree[x][y].final_payoff_of_node=tree[x][y].payoff;
+                        tree[x][y].payoff=temp;
                     }
 
                 }
@@ -269,6 +246,8 @@ int main()
         }
     }
 
+    //the final option price 
+    cout<<"the final price of the american option:"<<tree[0][0].payoff;
 
 
 
