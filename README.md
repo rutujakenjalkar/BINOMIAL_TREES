@@ -29,7 +29,7 @@ Node (UP =0, DOWN =2) -> Price: 67.032 | Payoff: 0 | Prob: 0.178512
 Node (UP =1, DOWN =1) -> Price: 100.00 | Payoff: 0 | Prob: 0.487990
 Node (UP =2, DOWN =0) -> Price: 149.182 | Payoff: 49.1825 | Prob: 0.333498
 
-Root (S0: 100.00) -> Option Valuation Result: 14.8414 ```
+Root (S0: 100.00) -> Option Valuation Result: 14.8414
 
 
 
