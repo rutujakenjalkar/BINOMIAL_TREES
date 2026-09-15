@@ -30,6 +30,19 @@ Node (UP =1, DOWN =1) -> Price: 100.00 | Payoff: 0 | Prob: 0.487990
 Node (UP =2, DOWN =0) -> Price: 149.182 | Payoff: 49.1825 | Prob: 0.333498
 
 Root (S0: 100.00) -> Option Valuation Result: 14.8414
+```
 
+## Build and Run
+```
+g++ -O3 binomial_tree.cpp -o binomial_tree_euro
+./binomial_tree_euro
+
+g++ -O3 american_tree.cpp -o binomial_tree_amer
+./binomial_tree_amer
+
+```
+
+---
+> **Design Note**: I/O visualization logic has been stripped from core valuation loops to maximize execution speed and benchmark accuracy.
 
 
