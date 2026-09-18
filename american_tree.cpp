@@ -223,26 +223,22 @@ int main()
     //for DOING THE ACTUAL MATH CAULTION
     for(int i = level-1;i>=0;i--)
     {
-        for (int x =0;x<=level-1;x++)
+        for (int x =0;x<=i;x++)
         {
-            for (int y =0 ;y<=level-1;y++)
+        
+            int y = i - x;
+            //getting the upper node from the current node
+            double weighted_up_value= tree[x+1][y].probability_up_prev*tree[x+1][y].payoff;
+            //getting the lower node from the current node 
+            double weighted_down_value = tree[x][y+1].probability_down_prev*tree[x][y+1].payoff;
+            double discount_fact = 1.0 / exp(risk_free_rate * 0.01 * T);
+            double temp = (weighted_up_value + weighted_down_value) * discount_fact; // Multiply to discount back
+
+            if (temp>tree[x][y].payoff)
             {
-                if (x+y == i)
-                {
-                    //getting the upper node from the current node
-                    double weighted_up_value= tree[x+1][y].probability_up_prev*tree[x+1][y].payoff;
-                    //getting the lower node from the current node 
-                    double weighted_down_value = tree[x][y+1].probability_down_prev*tree[x][y+1].payoff;
-                   double discount_fact = 1.0 / exp(risk_free_rate * 0.01 * T);
-                    double temp = (weighted_up_value + weighted_down_value) * discount_fact; // Multiply to discount back
-
-                    if (temp>tree[x][y].payoff)
-                    {
                         tree[x][y].payoff=temp;
-                    }
-
-                }
             }
+            
         }
     }
 
