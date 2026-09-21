@@ -3,7 +3,19 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <cmath>
 using namespace std;
+
+
+int row_size;
+int col_size;
+vector<string> strike_prices;
+vector<string> maturities;
+double option_price;
+double strike_price;
+double risk_free_rate;
+
+
 
 
 
@@ -45,12 +57,51 @@ vector<vector<string>> readCSV(const string &filename)
 
 
 //DUPIRE FORMULA FUNCTION
+vector<vector<double>> get_dupire_matrix( vector<vector<double>> matrix,const vector<vector<string>>& price_grid)
+{
+
+    cout<<"this is being called."<<endl;
+    for(int i=1;i<=row_size-1;i++)
+    {
+        for (int j=1;j<=col_size-1;j++)
+        {
+            cout<<"we are here"<<endl;
+            if (j==1)
+            {
+                matrix[i][j]=0;
+            }
+            else
+            {
+                double delta_c_time=stod(price_grid[i+1][j])- stod(price_grid[i][j]);
+                double delta_t_time= (stod(maturities[2])-stod(maturities[1]))*2;
+
+                double time_derivative= delta_c_time/delta_t_time;
+
+                double delta_c_strike = stod(price_grid[i][j+1])-stod(price_grid[i][j]);
+                double delta_strike =(stod(strike_prices[1])-stod(strike_prices[0]))*2;
+
+                double first_strike_derivative= delta_c_strike/delta_strike ;
+
+                //SECOND STRIKE DERIVATIVE //CONVEXITY
+                double second_strike_derivative= (stod(price_grid[i][j+1])-(2*stod(price_grid[i][j]))+stod(price_grid[i][j-1]))/pow(delta_strike,2);
+                
+                double numerator= time_derivative +(risk_free_rate*strike_price*first_strike_derivative)-(risk_free_rate*option_price);
+
+                double denominator = 0.5*pow(strike_price,2)*second_strike_derivative;
+
+                double volatility=pow(( numerator/denominator),0.5);
+
+                matrix[i][j] = volatility;
 
 
+            
+            }
+        }
+    }
+    return matrix ;
 
 
-
-
+}
 
 
 
@@ -65,27 +116,39 @@ vector<vector<string>> readCSV(const string &filename)
 
 int main()
 {
-    auto data = readCSV("C:\\Users\\rutuj\\Downloads\\local_vol_grid.csv");
+   
+    cout<<"Enter the strike price"<<endl;
+    cin>>strike_price;
+
+
+    
+    cout<<"enter the option price:"<<endl;
+    cin>>option_price;
+
+   
+    cout<<"enter the risk free rate of return."<<endl;
+    cin>>risk_free_rate;
+    auto price_grid = readCSV("C:\\Users\\rutuj\\Downloads\\maturity_strike_data.csv");
 
   
 
-    for (const auto& row : data) {
+    for (const auto& row : price_grid) {
         for (const auto& cell : row) {
             std::cout << cell << "\t";
         }
         std::cout << std::endl;
     }
 
-    int  col_size= data[0].size();
+    col_size= price_grid[0].size();
     cout<<col_size<<endl;
 
-    vector<string> strike_prices;
+    
     strike_prices.resize(col_size);
 
     for(int i=1 ;i< col_size;i++)
     {
         string temp;
-        temp=data[0][i];
+        temp=price_grid[0][i];
         strike_prices[i]=temp;
     }
 
@@ -93,28 +156,43 @@ int main()
     cout<<"1:"<<strike_prices[1]<<endl;
 
 
-    vector<string> maturities;
-
-
-    int row_size=data.size();
+    row_size=price_grid.size();
     maturities.resize(row_size);
 
 
 
-    for (int i =0;i<row_size;i++)
+    for (int i =1;i<row_size;i++)
     {
         string temp;
-        temp= data[i][0];
+        temp= price_grid[i][0];
         maturities[i]=temp;
     }
 
     cout<<"1:"<<maturities[1]<<endl;
 
+    for (int i =0;i<row_size;i++)
+    {
+        cout<<maturities[i]<<endl;
+    }
+
+    for (int j =0 ;j<col_size;j++)
+    {
+        cout<<strike_prices[j]<<endl;
+    }
 
 
-    vector<vector<double>> local_volitalities[row_size][col_size];
+     vector<vector<double>> local_volitalities(row_size, vector<double>(col_size, 0.0));
+
+    
+     vector<vector<double>> x = get_dupire_matrix(local_volitalities,price_grid);
 
 
-
-    return 0;
+     for (const auto& row : x) {
+         for (const auto& cell : row) {
+             std::cout << cell << "\t";
+        }
+        std::cout << std::endl;
+     }
+ 
+     return 0;
 }
