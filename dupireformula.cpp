@@ -60,42 +60,55 @@ vector<vector<string>> readCSV(const string &filename)
 vector<vector<double>> get_dupire_matrix( vector<vector<double>> matrix,const vector<vector<string>>& price_grid)
 {
 
-    cout<<"this is being called."<<endl;
-    for(int i=1;i<=row_size-1;i++)
+  
+    for(int i=0;i<=row_size-1;i++)
     {
-        for (int j=1;j<=col_size-1;j++)
+        for (int j=0;j<=col_size-1;j++)
         {
-            cout<<"we are here"<<endl;
-            if (j==1)
+           
+            if (i==0 && j==0)
+            {
+                matrix[j][j]=0;
+            }
+            else if (i==0 && j!=0)
+            {
+                matrix[i][j]= stod(strike_prices[j]);
+            }
+            else if (i!=0 && j==0)
+            {
+                matrix[i][j]=stod(maturities[i]);
+            }
+            else if (j==1 || j == col_size -1 ||i== row_size -1 )
             {
                 matrix[i][j]=0;
             }
             else
             {
-                double delta_c_time=stod(price_grid[i+1][j])- stod(price_grid[i][j]);
-                double delta_t_time= (stod(maturities[2])-stod(maturities[1]))*2;
+                    double delta_c_time=stod(price_grid[i+1][j])- stod(price_grid[i][j]);
+                    double delta_t_time= (stod(maturities[2])-stod(maturities[1]))*2;
 
-                double time_derivative= delta_c_time/delta_t_time;
+                    double time_derivative= delta_c_time/delta_t_time;
 
-                double delta_c_strike = stod(price_grid[i][j+1])-stod(price_grid[i][j]);
-                double delta_strike =(stod(strike_prices[1])-stod(strike_prices[0]))*2;
+                    double delta_c_strike = stod(price_grid[i][j+1])-stod(price_grid[i][j]);
+                    double delta_strike =(stod(strike_prices[2])-stod(strike_prices[1]))*2;
 
-                double first_strike_derivative= delta_c_strike/delta_strike ;
+                     double first_strike_derivative= delta_c_strike/delta_strike ;
 
-                //SECOND STRIKE DERIVATIVE //CONVEXITY
-                double second_strike_derivative= (stod(price_grid[i][j+1])-(2*stod(price_grid[i][j]))+stod(price_grid[i][j-1]))/pow(delta_strike,2);
+                     //SECOND STRIKE DERIVATIVE //CONVEXITY
+                    double second_strike_derivative= (stod(price_grid[i][j+1])-(2*stod(price_grid[i][j]))+stod(price_grid[i][j-1]))/pow(delta_strike,2);
                 
-                double numerator= time_derivative +(risk_free_rate*strike_price*first_strike_derivative)-(risk_free_rate*option_price);
+                    double numerator= time_derivative +(risk_free_rate*stod(strike_prices[j])*first_strike_derivative);
 
-                double denominator = 0.5*pow(strike_price,2)*second_strike_derivative;
+                    double denominator = 0.5*pow(stod(strike_prices[j]),2)*second_strike_derivative;
 
-                double volatility=pow(( numerator/denominator),0.5);
+                   double volatility=pow(( numerator/denominator),0.5);
 
-                matrix[i][j] = volatility;
+                    matrix[i][j] = volatility;
 
 
             
-            }
+             }
+
         }
     }
     return matrix ;
@@ -128,7 +141,7 @@ int main()
    
     cout<<"enter the risk free rate of return."<<endl;
     cin>>risk_free_rate;
-    auto price_grid = readCSV("C:\\Users\\rutuj\\Downloads\\maturity_strike_data.csv");
+    auto price_grid = readCSV("C:\\Users\\rutuj\\Downloads\\maturity_data.csv");
 
   
 
@@ -172,11 +185,19 @@ int main()
 
     for (int i =0;i<row_size;i++)
     {
+        if (i==0)
+        {
+            cout<<"maturi"<<endl;
+        }
         cout<<maturities[i]<<endl;
     }
 
     for (int j =0 ;j<col_size;j++)
     {
+        if (j==0)
+        {
+            cout<<"strike_prie"<<endl;
+        }
         cout<<strike_prices[j]<<endl;
     }
 
@@ -184,15 +205,15 @@ int main()
      vector<vector<double>> local_volitalities(row_size, vector<double>(col_size, 0.0));
 
     
-     vector<vector<double>> x = get_dupire_matrix(local_volitalities,price_grid);
+      vector<vector<double>> x = get_dupire_matrix(local_volitalities,price_grid);
 
 
-     for (const auto& row : x) {
-         for (const auto& cell : row) {
-             std::cout << cell << "\t";
-        }
-        std::cout << std::endl;
-     }
+      for (const auto& row : x) {
+          for (const auto& cell : row) {
+              std::cout << cell << "\t";
+         }
+         std::cout << std::endl;
+      }
  
      return 0;
 }
